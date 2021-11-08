@@ -1,1 +1,41 @@
-Hello World!
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"/>
+    <title>Project Website</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+      .bubble {
+        position: absolute;
+        top: 100px;
+        left: 0px;
+      }
+      .line {
+        position: absolute;
+        top: 100px;
+        left: 400px;
+      }
+    </style>
+  </head>
+  <body>
+
+    <h1>NBA Players</h1>
+
+
+    <label for="team">Choose a team:</label>
+    <select name="team" id="team"></select>
+    <label for="stat">Choose a statistic:</label>
+    <select name="stat" id="stat"></select>
+    <label for="player">Player: </label>
+    <div name="player" id="player" style="display:inline"></div>
+
+
+    <svg id="bubble" class="bubble"></svg>
+    <svg id="line" class="line"></svg>
+    
+    <script src="bar_chart.js"></script>
+    <script src="main_chart.js"></script>
+    
+
+  </body>
+</html>
