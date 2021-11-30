@@ -1,41 +1,53 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8"/>
+    <meta charset="UTF-8" />
     <title>Project Website</title>
+    <link rel="stylesheet" href="indexStyling.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Raleway&family=Roboto:wght@500&display=swap"
+      rel="stylesheet"
+    />
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
-      .bubble {
+      .line {
+        position: absolute;
+        top: 1100px;
+        left: 0px;
+      }
+      .scatter {
         position: absolute;
         top: 100px;
         left: 0px;
+        overflow: hidden;
       }
-      .line {
+      .teambar {
         position: absolute;
-        top: 100px;
-        left: 400px;
+        top: 1100px;
+        left: 1100px;
       }
     </style>
   </head>
   <body>
+    <h1>NBA Player Statistics</h1>
 
-    <h1>NBA Players</h1>
-
-
-    <label for="team">Choose a team:</label>
-    <select name="team" id="team"></select>
-    <label for="stat">Choose a statistic:</label>
-    <select name="stat" id="stat"></select>
-    <label for="player">Player: </label>
-    <div name="player" id="player" style="display:inline"></div>
-
-
-    <svg id="bubble" class="bubble"></svg>
+    <nav>
+      <label for="stat">1) Choose a statistic:</label>
+      <select name="stat" id="stat"></select>
+      <label for="player">Player: </label>
+      <div name="player" id="player" style="display: inline"></div>
+      <span id="players"
+        >2) Choose a circle. Player Salary is shown below.
+      </span>
+      <span id="teams">3) Choose a team. Total Salary is shown below. </span>
+    </nav>
     <svg id="line" class="line"></svg>
-    
+    <svg id="scatter" class="scatter"></svg>
+    <svg id="teambar" class="teambar"></svg>
+
     <script src="bar_chart.js"></script>
     <script src="main_chart.js"></script>
-    
-
+    <script src="scatter_main.js"></script>
+    <script src="team_bar.js"></script>
   </body>
 </html>

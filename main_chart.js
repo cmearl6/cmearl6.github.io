@@ -1,4 +1,3 @@
-
 d3.csv("dataset/player_attributes.csv").then(function(dataset) {
     var width = 400
     var height = 300
@@ -30,6 +29,7 @@ d3.csv("dataset/player_attributes.csv").then(function(dataset) {
       .text(d => d.Label)
       .attr("value", d => d.Value)
 
+
     function update(selected) {
         activeplayers = dataset.filter(d => d.ROSTERSTATUS == "Active" && d.TEAM_ABBREVIATION == selected)
 
@@ -54,7 +54,7 @@ d3.csv("dataset/player_attributes.csv").then(function(dataset) {
                     document.getElementById("player").innerHTML = d.DISPLAY_FIRST_LAST;
                   })
                   .on('click', function(e, d){
-                      updatePlayer(d.DISPLAY_FIRST_LAST);
+                    updatePlayer(d.DISPLAY_FIRST_LAST);
                   });
 
     }
@@ -85,13 +85,15 @@ d3.csv("dataset/player_attributes.csv").then(function(dataset) {
                   })
                   .on('click', function(e, d){
                     updatePlayer(d.DISPLAY_FIRST_LAST);
-                    updateBar();
                   });
+        dots.transition().duration(5000)
+            .attr('cy', d => d[stat])
     }
 
     d3.select("#team").on("change", function(d){
         var selectedOption = d3.select(this).property("value")
         update(selectedOption)
+
     });
     
     d3.select("#stat").on("change", function(d){
@@ -118,6 +120,7 @@ d3.csv("dataset/player_attributes.csv").then(function(dataset) {
                     document.getElementById("player").innerHTML = d.DISPLAY_FIRST_LAST;
                   })
                   .on('click', function(e, d){
+                    console.log("click")
                     updatePlayer(d.DISPLAY_FIRST_LAST);
                   });
 
