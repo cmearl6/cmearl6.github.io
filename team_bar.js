@@ -2,21 +2,21 @@
 var team = "ATL";
 
 var dimensions = {
-    width: 1000,
-    height: 500,
+    width: 500,
+    height: 275,
     margin: {
-        top: 10,
-        bottom: 50,
-        right: 100,
-        left: 150
+        top: 50,
+        bottom: 70,
+        right: 30,
+        left: 120
     }
 }
 
 var svgteam = d3.select("#teambar")
             .style("width", dimensions.width)
             .style("height", dimensions.height)
-            .style("background-color", "#17408b")
-            .style("border", "2px solid red");
+            .style("background-color", "#9ec0ff")
+            .style("border", "2px solid #c9082a");
 
 function initializeTeamChart() {
     team = "";
@@ -57,7 +57,7 @@ function initializeTeamChart() {
         // create x axis with a tick every 5 years and 65 degree rotation
         svgteam.append('g')
             .call(d3.axisBottom(xScale)
-            .tickValues(xScale.domain()))
+            .tickValues(xScale.domain().filter(function(d,i){return ! (i%2)})))
             .style("transform", `translateY(${dimensions.height - dimensions.margin.bottom}px)`)
             .selectAll("text")
             .style("text-anchor", "end")
@@ -67,13 +67,13 @@ function initializeTeamChart() {
 
         svgteam.append("text")
         .attr("x", (dimensions.width - dimensions.margin.right) / 2)
-        .attr("y", dimensions.height)
+        .attr("y", dimensions.height - 10)
         .style("text-anchor", "middle")
         .style("margin-top", 20)
         .text("Year")
 
         svgteam.append("text")
-        .attr("transform", "translate(" + (dimensions.margin.left / 2) + "," + (dimensions.height / 2) + ")rotate(-90)")
+        .attr("transform", "translate(30," + (dimensions.height / 2) + ")rotate(-90)")
         .style("text-anchor", "middle")
         .text("Salary")
             
@@ -132,7 +132,7 @@ function updateTeam(newplayer) {
         // create x axis with a tick every 5 years and 65 degree rotation
         svgteam.append('g')
             .call(d3.axisBottom(xScale)
-            .tickValues(xScale.domain()))
+            .tickValues(xScale.domain().filter(function(d,i){return ! (i%2)})))
             .style("transform", `translateY(${dimensions.height - dimensions.margin.bottom}px)`)
             .selectAll("text")
             .style("text-anchor", "end")
@@ -142,14 +142,24 @@ function updateTeam(newplayer) {
 
         svgteam.append("text")
         .attr("x", (dimensions.width - dimensions.margin.right) / 2)
-        .attr("y", dimensions.height)
+        .attr("y", dimensions.height - 10)
         .style("text-anchor", "middle")
         .text("Year")
 
         svgteam.append("text")
-        .attr("transform", "translate(" + (dimensions.margin.left / 2) + "," + (dimensions.height / 2) + ")rotate(-90)")
+        .attr("transform", "translate(30," + (dimensions.height / 2) + ")rotate(-90)")
         .style("text-anchor", "middle")
-        .text("Salary")
+        .text("Salary");
+
+        var text = svg
+        .append('text')
+        .attr("id", 'playersalarytext')
+        .attr("x", 200)
+        .attr("y", 20)
+        .attr("dx", "-.8em")
+        .attr("dy", ".15em")
+        .attr("font-family", "sans-serif")
+        .text(newplayer + "'s Salary");
             
         var bars = svgteam.selectAll("rect")
             .data(salary)

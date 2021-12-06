@@ -1,20 +1,17 @@
 // Cole Earl
 var player = "LeBron James";
 
-var dimensions = {
-    width: 1000,
-    height: 500,
-    margin: {
-        top: 50,
-        bottom: 50,
-        right: 100,
-        left: 150
-    }
-}
-
-var svg = d3.select("#line")
+var svg = d3.select("#teambar")
             .style("width", dimensions.width)
-            .style("height", dimensions.height);
+            .style("height", dimensions.height)
+            .style("background-color", "#9ec0ff")
+            .style("border", "2px solid #c9082a");
+
+var svgstream = d3.select('#stream')
+            .style("width", dimensions.width)
+            .style("height", dimensions.height)
+            .style("background-color", "#9ec0ff")
+            .style("border", "2px solid #c9082a");
 
 function initializeChart() {
     player = "";
@@ -65,12 +62,12 @@ function initializeChart() {
 
         svg.append("text")
         .attr("x", (dimensions.width - dimensions.margin.right) / 2)
-        .attr("y", dimensions.height)
+        .attr("y", dimensions.height - 10)
         .style("text-anchor", "middle")
         .text("Year")
 
         svg.append("text")
-        .attr("transform", "translate(" + (dimensions.margin.left / 2) + "," + (dimensions.height / 2) + ")rotate(-90)")
+        .attr("transform", "translate(30," + (dimensions.height / 2) + ")rotate(-90)")
         .style("text-anchor", "middle")
         .text("Salary")
             
@@ -139,12 +136,12 @@ function updatePlayer(newplayer) {
 
         svg.append("text")
         .attr("x", (dimensions.width - dimensions.margin.right) / 2)
-        .attr("y", dimensions.height)
+        .attr("y", dimensions.height - 10)
         .style("text-anchor", "middle")
         .text("Year")
 
         svg.append("text")
-        .attr("transform", "translate(" + (dimensions.margin.left / 2) + "," + (dimensions.height / 2) + ")rotate(-90)")
+        .attr("transform", "translate(30," + (dimensions.height / 2) + ")rotate(-90)")
         .style("text-anchor", "middle")
         .text("Salary")
 
@@ -152,7 +149,7 @@ function updatePlayer(newplayer) {
         .append('text')
         .attr("id", 'playersalarytext')
         .attr("x", 200)
-        .attr("y", 10)
+        .attr("y", 20)
         .attr("dx", "-.8em")
         .attr("dy", ".15em")
         .attr("font-family", "sans-serif")
@@ -172,4 +169,84 @@ function updatePlayer(newplayer) {
 
     })
 
+}
+
+
+function addLine(newplayer, statistic) {
+    d3.csv("dataset/Seasons_Stats.csv").then(function(dataset) {
+
+        var statdesc = "Points";
+
+        if (statistic == "PPG") {
+            statdesc = "Points";
+        } else if (statistic == "RPG") {
+            statdesc = "Rebounds";
+        } else if (statistic == "APG") {
+            statdesc = "Assists";
+        }
+
+        svgstream.selectAll("*").remove();
+
+        var yearlystats = dataset.filter(d => d.Player == newplayer);
+        yearlystats.forEach(d => d[statistic] = parseInt(d[statistic]))
+    
+        console.log(yearlystats);
+
+        var season = yearlystats.map(d => d.Year);
+
+        var xScale = d3.scaleBand()
+                    .domain(season)
+                    .range([dimensions.margin.left,dimensions.width - dimensions.margin.right]);
+
+        var yScale = d3.scaleLinear()
+                    .domain([0, d3.max(yearlystats, d => d[statistic])])
+                    .range([dimensions.height - dimensions.margin.bottom, 30])
+
+        svgstream.append('g')
+            .call(d3.axisLeft(yScale))
+            .style("transform", `translateX(${dimensions.margin.left}px)`)
+            
+        // create x axis with a tick every 5 years and 65 degree rotation
+        svgstream.append('g')
+            .call(d3.axisBottom(xScale)
+            .tickValues(xScale.domain()))
+            .style("transform", `translateY(${dimensions.height - dimensions.margin.bottom}px)`)
+            .selectAll("text")
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", ".15em")
+            .attr("transform", "rotate(-65)")
+
+        svgstream.append("text")
+        .attr("x", (dimensions.width - dimensions.margin.right) / 2)
+        .attr("y", dimensions.height - 10)
+        .style("text-anchor", "middle")
+        .text("Year")
+
+        svgstream.append("text")
+        .attr("transform", "translate(30," + (dimensions.height / 2) + ")rotate(-90)")
+        .style("text-anchor", "middle")
+        .text(statdesc)
+
+        var text = svgstream
+        .append('text')
+        .attr("id", 'playersalarytext')
+        .attr("x", 200)
+        .attr("y", 20)
+        .attr("dx", "-.8em")
+        .attr("dy", ".15em")
+        .attr("font-family", "sans-serif")
+        .text(newplayer + "'s " + statdesc);
+
+        svgstream.append("path")
+           .datum(yearlystats)
+           .attr("fill", "none")
+           .attr("stroke", "steelblue")
+           .attr("stroke-width", 1.5)
+           .attr("d", d3.line()
+                .x(function(d) {return xScale(d.Year)})
+                .y(function(d) {return yScale(d[statistic])}) 
+           )
+    
+    })
 }

@@ -1,13 +1,16 @@
 // Scatterplot code for teams  JavaScript source code
 d3.csv("dataset/player_attributes.csv").then(function (dataset) {
+
+    var statistic = "PPG";
+    
     var dimensions = {
-        width: 1200,
-        height: 800,
+        width: 900,
+        height: 600,
         margin: {
             top: 50,
             bottom: 100,
-            right: 100,
-            left: 150
+            right: 30,
+            left: 60
         }
     }
 
@@ -17,8 +20,8 @@ d3.csv("dataset/player_attributes.csv").then(function (dataset) {
     var svg = d3.select('#scatter')
         .style("width", dimensions.width)
         .style("height", dimensions.height)
-        .style("background-color", "#17408b")
-        .style("border", "2px solid red")
+        .style("background-color", "#9ec0ff")
+        .style("border", "2px solid #c9082a")
         .style("margin", 17)
 
 
@@ -55,14 +58,6 @@ d3.csv("dataset/player_attributes.csv").then(function (dataset) {
         .domain(teams)
         .range(team_colors2)
 
-    console.log(rScale(1))
-
-    console.log(dataset)
-
-
-    console.log(activeplayers)
-
-
 
     var dots = svg.selectAll("circle")
         .data(activeplayers)
@@ -79,10 +74,12 @@ d3.csv("dataset/player_attributes.csv").then(function (dataset) {
         .on('mouseover', function (e, d) {
             d3.select(this)
                 .attr("stroke-width", 4)
-            document.getElementById("player").innerHTML = d.DISPLAY_FIRST_LAST;
+            
         })
         .on('click', function (e, d) {
             updatePlayer(d.DISPLAY_FIRST_LAST);
+            addLine(d.DISPLAY_FIRST_LAST, statistic);
+            document.getElementById("player").innerHTML = d.DISPLAY_FIRST_LAST;
         })
         .on('mouseout', function (e, d){
             d3.select(this)
@@ -92,15 +89,33 @@ d3.csv("dataset/player_attributes.csv").then(function (dataset) {
     var xAxisgen = d3.axisBottom().scale(xScale)
 
     console.log(dataset.filter(d=> +d.REB > 20))
-    
-    //DEBUG filter where d.REB > 20 and find where the value is and why it's not showing up on the plot
 
 
     // adjust stat
     var stats = [{ "Label": "Points", "Value": "PTS" }, { "Label": "Rebounds", "Value": "REB" }, { "Label": "Assists", "Value": "AST" }]
 
-    d3.select("#stat").on("change", function (d) {
+    d3.select("#stat")
+      .selectAll('options')
+      .data(stats)
+      .enter()
+      .append('option')
+      .text(d => d.Label)
+      .attr("value", d => d.Value);
+
+    d3.select("#stat")
+      .on("change", function (d) {
         stat = d3.select(this).property("value");
+        
+        if (stat == "PTS") {
+            label = "Points";
+            statistic = "PPG";
+        } else if (stat == "REB") {
+            label = "Rebounds";
+            statistic = "RPG";
+        } else if (stat == "AST") {
+            label = "Assists";
+            statistic = "APG";
+        }
 
         yScale
             .domain(d3.extent(activeplayers, d => +d[stat]))
@@ -110,6 +125,8 @@ d3.csv("dataset/player_attributes.csv").then(function (dataset) {
 
         yAxis.transition().duration(2000)
             .call(d3.axisLeft(yScale))
+
+        yAxisLabel.text(label);
     })
 
 
