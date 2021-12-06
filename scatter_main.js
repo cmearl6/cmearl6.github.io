@@ -16,6 +16,7 @@ d3.csv("dataset/player_attributes.csv").then(function (dataset) {
 
     initializeChart();
     initializeTeamChart();
+    streamgraph();
 
     var svg = d3.select('#scatter')
         .style("width", dimensions.width)
@@ -142,6 +143,7 @@ d3.csv("dataset/player_attributes.csv").then(function (dataset) {
         .attr("transform", "rotate(-65)")
         .on('click', function (e, d) {
             updateTeam(d);
+            streamgraph();
         })
 
     var xAxisLabel = svg.append("text")
