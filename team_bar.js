@@ -3,18 +3,20 @@ var team = "ATL";
 
 var dimensions = {
     width: 500,
-    height: 275,
+    height: 318,
     margin: {
         top: 50,
-        bottom: 70,
+        bottom: 80,
         right: 30,
-        left: 120
+        left: 80
     }
 }
 
-var svgteam = d3.select("#teambar")
-            .style("width", dimensions.width)
-            .style("height", dimensions.height)
+var svgteam = d3.select("#teamcontainer")
+            .append("svg")
+            .attr("preserveAspectRatio", "xMinYMin meet")
+            .attr("viewBox", "0 0 500 318")
+            .classed("teambar", true)
             .style("background-color", "#9ec0ff")
             .style("border", "2px solid #c9082a");
 
@@ -93,11 +95,8 @@ function initializeTeamChart() {
 
 }
 
-function updateTeam(newplayer) {
+function updateTeam(newplayer, color, outline) {
     team = newplayer;
-
-    console.log(team)
-
 
     d3.csv("dataset/salaries.csv").then(function(dataset) {
 
@@ -122,7 +121,7 @@ function updateTeam(newplayer) {
                     .range([dimensions.margin.left,dimensions.width - dimensions.margin.right]);
 
         var yScale = d3.scaleLinear()
-                    .domain([0, d3.max(salary, d => d.Salary)])
+                    .domain([0, (d3.max(salary, d => d.Salary) / 1000000)])
                     .range([dimensions.height - dimensions.margin.bottom, dimensions.margin.top])
 
         svgteam.append('g')
@@ -151,7 +150,7 @@ function updateTeam(newplayer) {
         .style("text-anchor", "middle")
         .text("Salary");
 
-        var text = svg
+        var text = svgteam
         .append('text')
         .attr("id", 'playersalarytext')
         .attr("x", 200)
@@ -159,17 +158,18 @@ function updateTeam(newplayer) {
         .attr("dx", "-.8em")
         .attr("dy", ".15em")
         .attr("font-family", "sans-serif")
-        .text(newplayer + "'s Salary");
+        .text(newplayer + "'s Salary (millions)");
             
         var bars = svgteam.selectAll("rect")
             .data(salary)
             .enter()
             .append("rect")
             .attr("x", d => xScale(d[season]))
-            .attr("y", d => yScale(d.Salary))
+            .attr("y", d => yScale(d.Salary / 1000000))
             .attr("width", xScale.bandwidth())
-            .attr("height", d => dimensions.height - dimensions.margin.bottom - yScale(d.Salary))
-            .attr("fill", "green")
+            .attr("height", d => dimensions.height - dimensions.margin.bottom - yScale(d.Salary / 1000000))
+            .attr("fill", color)
+            .attr("stroke", outline)
 
         console.log(salary)
 

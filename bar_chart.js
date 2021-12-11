@@ -1,17 +1,13 @@
 // Cole Earl
 var player = "LeBron James";
 
-var svg = d3.select("#teambar")
-            .style("width", dimensions.width)
-            .style("height", dimensions.height)
-            .style("background-color", "#9ec0ff")
-            .style("border", "2px solid #c9082a");
-
-var svgstream = d3.select('#stream')
-            .style("width", dimensions.width)
-            .style("height", dimensions.height)
-            .style("background-color", "#9ec0ff")
-            .style("border", "2px solid #c9082a");
+var svgstream = d3.select('#teamcontainer')
+                  .append("svg")
+                  .attr("preserveAspectRatio", "xMinYMin meet")
+                  .attr("viewBox", "0 0 500 318")
+                  .classed("stream", true)
+                  .style("background-color", "#9ec0ff")
+                  .style("border", "2px solid #c9082a");
 
 function initializeChart() {
     player = "";
@@ -25,7 +21,7 @@ function initializeChart() {
 
         var playername = "Player Name";
 
-        svg.selectAll("*").remove();
+        svgteam.selectAll("*").remove();
         
         var season = "Season Start";
 
@@ -45,12 +41,12 @@ function initializeChart() {
                     .domain([0, d3.max(salary, d => d.Salary)])
                     .range([dimensions.height - dimensions.margin.bottom, dimensions.margin.top])
 
-        svg.append('g')
+        svgteam.append('g')
             .call(d3.axisLeft(yScale))
             .style("transform", `translateX(${dimensions.margin.left}px)`)
             
         // create x axis with a tick every 5 years and 65 degree rotation
-        svg.append('g')
+        svgteam.append('g')
             .call(d3.axisBottom(xScale)
             .tickValues(xScale.domain()))
             .style("transform", `translateY(${dimensions.height - dimensions.margin.bottom}px)`)
@@ -60,18 +56,18 @@ function initializeChart() {
             .attr("dy", ".15em")
             .attr("transform", "rotate(-65)")
 
-        svg.append("text")
+        svgteam.append("text")
         .attr("x", (dimensions.width - dimensions.margin.right) / 2)
         .attr("y", dimensions.height - 10)
         .style("text-anchor", "middle")
         .text("Year")
 
-        svg.append("text")
+        svgteam.append("text")
         .attr("transform", "translate(30," + (dimensions.height / 2) + ")rotate(-90)")
         .style("text-anchor", "middle")
         .text("Salary")
             
-        var bars = svg.selectAll("rect")
+        var bars = svgteam.selectAll("rect")
             .data(salary)
             .enter()
             .append("rect")
@@ -87,11 +83,8 @@ function initializeChart() {
 
 }
 
-function updatePlayer(newplayer) {
+function updatePlayer(newplayer, color, outline) {
     player = newplayer;
-
-    console.log(player)
-
 
     d3.csv("dataset/playersalaries.csv").then(function(dataset) {
 
@@ -99,7 +92,7 @@ function updatePlayer(newplayer) {
 
         var playername = "Player Name";
 
-        svg.selectAll("*").remove();
+        svgteam.selectAll("*").remove();
         
         var season = "Season Start";
 
@@ -116,15 +109,15 @@ function updatePlayer(newplayer) {
                     .range([dimensions.margin.left,dimensions.width - dimensions.margin.right]);
 
         var yScale = d3.scaleLinear()
-                    .domain([0, d3.max(salary, d => d.Salary)])
+                    .domain([0, (d3.max(salary, d => d.Salary) / 1000000)])
                     .range([dimensions.height - dimensions.margin.bottom, 30])
 
-        svg.append('g')
+        svgteam.append('g')
             .call(d3.axisLeft(yScale))
             .style("transform", `translateX(${dimensions.margin.left}px)`)
             
         // create x axis with a tick every 5 years and 65 degree rotation
-        svg.append('g')
+        svgteam.append('g')
             .call(d3.axisBottom(xScale)
             .tickValues(xScale.domain()))
             .style("transform", `translateY(${dimensions.height - dimensions.margin.bottom}px)`)
@@ -134,18 +127,18 @@ function updatePlayer(newplayer) {
             .attr("dy", ".15em")
             .attr("transform", "rotate(-65)")
 
-        svg.append("text")
+        svgteam.append("text")
         .attr("x", (dimensions.width - dimensions.margin.right) / 2)
         .attr("y", dimensions.height - 10)
         .style("text-anchor", "middle")
         .text("Year")
 
-        svg.append("text")
+        svgteam.append("text")
         .attr("transform", "translate(30," + (dimensions.height / 2) + ")rotate(-90)")
         .style("text-anchor", "middle")
         .text("Salary")
 
-        var text = svg
+        var text = svgteam
         .append('text')
         .attr("id", 'playersalarytext')
         .attr("x", 200)
@@ -153,17 +146,18 @@ function updatePlayer(newplayer) {
         .attr("dx", "-.8em")
         .attr("dy", ".15em")
         .attr("font-family", "sans-serif")
-        .text(newplayer + "'s Salary");
+        .text(newplayer + "'s Salary (millions)");
             
-        var bars = svg.selectAll("rect")
+        var bars = svgteam.selectAll("rect")
             .data(salary)
             .enter()
             .append("rect")
             .attr("x", d => xScale(d[season]))
-            .attr("y", d => yScale(d.Salary))
+            .attr("y", d => yScale(d.Salary / 1000000))
             .attr("width", xScale.bandwidth())
-            .attr("height", d => dimensions.height - dimensions.margin.bottom - yScale(d.Salary))
-            .attr("fill", "green")
+            .attr("height", d => dimensions.height - dimensions.margin.bottom - yScale(d.Salary / 1000000))
+            .attr("fill", color)
+            .attr("stroke", outline)
 
         console.log(salary)
 
@@ -172,7 +166,7 @@ function updatePlayer(newplayer) {
 }
 
 
-function addLine(newplayer, statistic) {
+function addLine(newplayer, statistic, color) {
     d3.csv("dataset/Seasons_Stats.csv").then(function(dataset) {
 
         var statdesc = "Points";
@@ -241,7 +235,7 @@ function addLine(newplayer, statistic) {
         svgstream.append("path")
            .datum(yearlystats)
            .attr("fill", "none")
-           .attr("stroke", "steelblue")
+           .attr("stroke", color)
            .attr("stroke-width", 1.5)
            .attr("d", d3.line()
                 .x(function(d) {return xScale(d.Year)})

@@ -11,21 +11,38 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
       .scatter {
-        position: absolute;
-        top: 100px;
-        left: 0px;
+        display: inline-block;
+        position: relative;
+        width: 65%;
+        padding-bottom: 100%;
+        vertical-align: top;
         overflow: hidden;
-        background-color: #9ec0ff;
+      }
+      .svg-content {
+        display: inline-block;
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+      .teamcontainer {
+        display: inline-block;
+        position: relative;
+        width: 34%;
+        padding-bottom: 100%;
+        vertical-align: top;
+        overflow: hidden;
       }
       .teambar {
-        position: absolute;
-        top: 120px;
-        left: 930px;
+        display: block;
+        position: relative;
+        top: 0;
+        left: 0;
       }
       .stream {
-        position: absolute;
-        top: 415px;
-        left: 930px;
+        display: block;
+        position: relative;
+        top: 50%;
+        left: 0;
       }
         .teamLine {
             position: absolute;
@@ -35,7 +52,7 @@
 
       .video {
         position: absolute;
-        top: 800px;
+        top: 1000px;
       }
 
 
@@ -54,17 +71,17 @@
       </span>
       <span id="teams" style="display: inline">3) Choose a team. Total Salary is shown below. </span>
     </nav>
-    
-    <svg id="scatter" class="scatter"></svg>
-    <svg id="teambar" class="teambar"></svg>
-    <svg id="stream" class="stream"></svg>
-    
-      <script src="team_bar.js"></script>
+
+    <div id="scatter" class="scatter">
+      <iframe width="560" height="315" class="video" src="https://www.youtube.com/embed/lniGwHJS8JA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+    <div id="teamcontainer" class="teamcontainer"></div>
+
+    <script src="team_bar.js"></script>
     <script src="bar_chart.js"></script>
     <script src="stream.js"></script>
     <script src="team_line.js"></script>
     <script src="scatter_main.js"></script>
-    <iframe width="560" height="315" class="video" src="https://www.youtube.com/embed/lniGwHJS8JA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
   </body>
 </html>

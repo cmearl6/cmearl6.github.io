@@ -1,14 +1,9 @@
+
 function streamgraph() {
 // Trying a streamgraph in JavaScript source code
 d3.csv("dataset/stream_salary.csv").then(function (dataset) {
 
-    var svg_stream = d3.select('#stream')
-        .style("width", dimensions.width)
-        .style("height", dimensions.height)
-        .style("background-color", "#9ec0ff")
-        .style("border", "2px solid #c9082a");
-
-    svg_stream.selectAll("*").remove();
+    svgstream.selectAll("*").remove();
 
     console.log(dataset)
     var teams = ["ATL", "BOS", "CLE", "NOP", "CHI", "DAL", "DEN", "GSW", "HOU", "LAC", "LAL", "MIA", "MIL", "MIN", "BKN", "NYK", "ORL", "IND", "PHI", "PHX", "POR", "SAC", "SAS", "OKC", "TOR", "UTA", "MEM", "WAS", "DET", "CHA"]
@@ -27,7 +22,7 @@ d3.csv("dataset/stream_salary.csv").then(function (dataset) {
         .range([dimensions.margin.left, dimensions.width - dimensions.margin.right])
 
     var yScale = d3.scaleLinear()
-        .domain([-2000000000, 2000000000])
+        .domain([0, 4])
         .range([dimensions.height - dimensions.margin.bottom, dimensions.margin.top])
 
     var colorScale1 = d3.scaleOrdinal()
@@ -38,18 +33,19 @@ d3.csv("dataset/stream_salary.csv").then(function (dataset) {
         .range(team_colors2)
 
     var streamGraph = d3.stack()
-        .offset(d3.stackOffsetSilhouette)
+        .offset(d3.stackOffsetNone)
         .keys(teams)
         (dataset)
 
-    console.log(streamGraph)
 
     var sizes = d3.area()
         .x(d => xScale(+d.data.Year))
-        .y0(d => yScale(d[0]))
-        .y1(d => yScale(d[1]))
+        .y0(d => yScale(d[0]/1000000000))
+        .y1(d => yScale(d[1]/1000000000))
 
-    var graph = svg_stream.selectAll("path")
+    console.log(streamGraph[0][0][1]/1000)
+
+    var graph = svgstream.selectAll("path")
         .data(streamGraph)
         .enter()
         .append("path")
@@ -59,10 +55,11 @@ d3.csv("dataset/stream_salary.csv").then(function (dataset) {
             
         })
 
-    var xAxisgen = d3.axisBottom().scale(xScale)
-    var yAxisgen = d3.axisLeft().scale(yScale)
 
-    var xAxis = svg_stream.append("g")
+    var xAxisgen = d3.axisBottom().scale(xScale)
+    var yAxisgen = d3.axisLeft().scale(yScale) 
+
+    var xAxis = svgstream.append("g")
         .call(d3.axisBottom(xScale)
             .tickValues(years.filter(function (d, i) { return !(i % 2) }))
             .tickFormat(d3.format("d")))
@@ -76,22 +73,32 @@ d3.csv("dataset/stream_salary.csv").then(function (dataset) {
     console.log(xScale.domain())
     console.log(yScale.domain())
 
-    svg_stream.append("text")
+    svgstream.append("text")
         .attr("x", (dimensions.width - dimensions.margin.right) / 2)
         .attr("y", dimensions.height - dimensions.margin.bottom*0.25)
         .style("text-anchor", "middle")
         .style("font-weight", "bold")
         .text("Year")
 
-    var yAxis = svg_stream.append("g")
+    var yAxis = svgstream.append("g")
         .call(yAxisgen)
         .style("transform", `translateX(${dimensions.margin.left}px)`)
 
-    svg_stream.append("text")
+    svgstream.append("text")
         .attr("transform", "translate("+ (dimensions.margin.left/3)+"," + (dimensions.height / 2) + ")rotate(-90)")
         .style("text-anchor", "middle")
         .style("font-weight", "bold")
         .text("Salary");
+
+    var title = svgstream
+        .append('text')
+        .attr("id", 'playersalarytext')
+        .attr("x", 200)
+        .attr("y", 20)
+        .attr("dx", "-.8em")
+        .attr("dy", ".15em")
+        .attr("font-family", "sans-serif")
+        .text("Salary by Team (billions)");
 })
 
 }
